@@ -8,6 +8,8 @@ import FormField from '@/components/FormField'
 import { Link, router } from 'expo-router'
 import CustomButton from '@/components/CustomButton'
 import { createUser } from '@/lib/appwrite'
+import { useGlobalContext } from '@/context/GlobalProvider'
+import { GlobalContextType } from '@/context/types.context'
 
 type SignUpFormType = {
   userName: string,
@@ -16,12 +18,16 @@ type SignUpFormType = {
 }
 
 const SignUp = () => {
+  const {setCurrentUser, setIsLoggedIn}  = useGlobalContext() as GlobalContextType;
+
   const [form, setForm] = useState<SignUpFormType>({
     userName: '',
     email: '',
     passWord:'',
   })
 const [isSubmitting, setIsSubmitting] = useState(false);
+
+
 
 const submit = async () => {
   console.log("FORM - >", form)
@@ -31,9 +37,11 @@ const submit = async () => {
   }
     setIsSubmitting(true);
     try{
-      await createUser(
+      const result = await createUser(
         form.email, form.passWord,  form.userName
       )
+      setCurrentUser(result);
+      setIsLoggedIn(true);
     } catch (err) {
       Alert.alert('Error', (err as Error).message)
     } 

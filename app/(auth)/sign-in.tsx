@@ -7,7 +7,10 @@ import { images } from '../../constants'
 import FormField from '@/components/FormField'
 import { Link, router } from 'expo-router'
 import CustomButton from '@/components/CustomButton'
-import { signIn } from '@/lib/appwrite'
+import { getCurrentUser, signIn } from '@/lib/appwrite'
+import { useGlobalContext } from '@/context/GlobalProvider'
+import { GlobalContextType } from '@/context/types.context'
+
 
 type SignInFormType = {
   email:string,
@@ -15,6 +18,7 @@ type SignInFormType = {
 }
 
 const SignIn = () => {
+  const {setCurrentUser, setIsLoggedIn}  = useGlobalContext() as GlobalContextType;
   const [form, setForm] = useState<SignInFormType>({
     email: '',
     passWord:'',
@@ -22,7 +26,7 @@ const SignIn = () => {
 const [isSubmitting, setIsSubmitting] = useState(false);
 
 const submit = async () => {
-  console.log('FORM -> ', form);
+
   if(!form.email || !form.passWord){
     Alert.alert('Error', 'Please fill in the required fields !')
     return
@@ -32,6 +36,9 @@ const submit = async () => {
       await signIn(
         form.email, form.passWord
       )
+      const result = await getCurrentUser();
+      setCurrentUser(result);
+      setIsLoggedIn(true);
     } catch (err) {
       Alert.alert('Error', (err as Error).message)
     }
