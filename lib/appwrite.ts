@@ -11,14 +11,16 @@ export const appWriteConfig = {
 }
 
 
+const { endpoint, platform,projectId,databaseId,userCollectionId,videoCollectionId,sorageId } = appWriteConfig;
+
 // Init your React Native SDK
 const client = new Client();
 
 
 client
-    .setEndpoint(appWriteConfig.endpoint) // Your Appwrite Endpoint
-    .setProject(appWriteConfig.projectId) // Your project ID
-    .setPlatform(appWriteConfig.platform) // Your application ID or bundle ID.
+    .setEndpoint(endpoint) // Your Appwrite Endpoint
+    .setProject(projectId) // Your project ID
+    .setPlatform(platform) // Your application ID or bundle ID.
 ;
 
 
@@ -35,8 +37,8 @@ export const createUser = async (email: string, password: string, userName:strin
         const avatarUrl = avatars.getInitials(userName);
         const session = await signIn(email, password);
         const newUser = await databases.createDocument(
-            appWriteConfig.databaseId,
-            appWriteConfig.userCollectionId,
+            databaseId,
+            userCollectionId,
             ID.unique(),
             {
                 accountId: newAccount.$id,
@@ -71,8 +73,8 @@ export const getCurrentUser = async () =>{
         if(!currentAccount) throw Error;
 
         const currentUser = await databases.listDocuments(
-                appWriteConfig.databaseId, 
-                appWriteConfig.userCollectionId, 
+                databaseId, 
+                userCollectionId, 
                 [Query.equal('accountId', currentAccount.$id)]);
         
         if(!currentUser) throw Error;
@@ -80,5 +82,36 @@ export const getCurrentUser = async () =>{
     } catch (err) {
         console.log(err)
         throw new Error((err as Error).message);
+    }
+}
+
+
+export const getAllPosts = async () =>{
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+        )
+        return posts.documents;
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message)
+    }
+}
+
+export const getLatestPosts = async () =>{
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+                Query.limit(7)
+            ]
+        )
+        return posts.documents;
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message)
     }
 }
