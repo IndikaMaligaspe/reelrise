@@ -12,7 +12,6 @@ import VideoCard from '@/components/VideoCard'
 
 const Home = () => {
   const [refreshing, setRefreshing] =  useState(false);
-
   const { data: posts, isLoading, refetch }  = useAppWrite(getAllPosts);
   const { data: latestPosts }  = useAppWrite(getAllPosts);
 

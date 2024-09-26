@@ -115,3 +115,21 @@ export const getLatestPosts = async () =>{
         throw new Error((err as Error).message)
     }
 }
+
+export const searchPosts = async (query:string | string[]) =>{
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+                Query.contains('title',query),
+                Query.limit(7)
+            ]
+        )
+        return posts.documents;
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message)
+    }
+}

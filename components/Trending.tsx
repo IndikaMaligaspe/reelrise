@@ -31,9 +31,8 @@ const zoomOut:any = {
     }
 }
 const TrandingItem = ({activeItem, item}:TrandingItemProps) =>{
-  console.log(activeItem.$id, item.$id, item.video)
   const video = useRef(null);
-  const [play, setPlay] = useState({});  
+  const [play, setPlay] = useState(false);  
   return(
     <Animatable.View 
      className="mr-5"
@@ -42,7 +41,7 @@ const TrandingItem = ({activeItem, item}:TrandingItemProps) =>{
         {
             play ? (
                 <Video 
-                    source={{ uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
+                    source={{ uri: item.video }}
                     className="w-52 h-72 rounded-[35px] mt-3 bg-white/10"
                     resizeMode={ResizeMode.CONTAIN}
                     useNativeControls
@@ -78,7 +77,7 @@ const TrandingItem = ({activeItem, item}:TrandingItemProps) =>{
 }
 
 
-type PostsProps = {
+type TrendingProps = {
     posts:Models.Document[]
 }
 
@@ -86,11 +85,11 @@ type viewableItemsProps = {
     viewableItems: ViewToken<Models.Document>[];
     changed: ViewToken<Models.Document>[]
 }
-const Trending = ({posts}: PostsProps) => {
+const Trending = ({posts}: TrendingProps) => {
   const [activeItem, setActiveItem] = useState(posts[0])
   
   const viewableItemChanged = (info:viewableItemsProps) =>{
-    console.log('inside viewableItemChanged - ',info, info.viewableItems[0]?.item?.$id, activeItem.$id)
+    // console.log('inside viewableItemChanged - ',info, info.viewableItems[0]?.item?.$id, activeItem.$id)
     if(info.viewableItems.length > 0){
         setActiveItem(info.viewableItems[0].item)
     }

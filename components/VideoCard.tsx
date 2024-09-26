@@ -1,6 +1,7 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Models } from 'react-native-appwrite'
+import { ResizeMode, Video } from 'expo-av';
 import { icons } from '@/constants';
 
 type VideoCardProps = {
@@ -38,7 +39,18 @@ const VideoCard = ({ video: {title, thumbnail, video,
         </View>
         {
             isPlay ? (
-                <Text className="text-white">Playing</Text>
+                <Video 
+                source={{ uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
+                className="w-52 h-72 rounded-[35px] mt-3 "
+                resizeMode={ResizeMode.CONTAIN}
+                useNativeControls
+                shouldPlay
+                onPlaybackStatusUpdate={(status:any) =>{
+                    if(status?.didJustFinish) {
+                        setIsPlay(false);
+                    }
+                }}
+            />
             ) : (
                 <TouchableOpacity 
                     activeOpacity={0.7}
