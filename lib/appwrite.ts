@@ -1,4 +1,5 @@
-import { Client, Account, ID, Avatars, Databases, Query } from 'react-native-appwrite';
+import { Client, Account, ID, Avatars, Databases, Query, Storage, ImageGravity } from 'react-native-appwrite';
+
 
 export const appWriteConfig = {
     endpoint: 'https://cloud.appwrite.io/v1',
@@ -7,12 +8,10 @@ export const appWriteConfig = {
     databaseId:`${process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID}`,
     userCollectionId:'66f21544001e651b8bb1',
     videoCollectionId:'66f2158d001cae5da7f0',
-    sorageId:'66f216de0035dba2c865',
+    storageId:'66f216de0035dba2c865',
 }
 
-console.log("---appWriteConfig--", appWriteConfig);
-
-const { endpoint, platform,projectId,databaseId,userCollectionId,videoCollectionId,sorageId } = appWriteConfig;
+const { endpoint, platform,projectId,databaseId,userCollectionId,videoCollectionId,storageId } = appWriteConfig;
 
 // Init your React Native SDK
 const client = new Client();
@@ -28,6 +27,8 @@ client
 const account = new Account(client);
 const avatars = new Avatars(client);
 const databases = new Databases(client);
+const storage = new Storage(client);
+
 export const createUser = async (email: string, password: string, userName:string) => {
     try 
     {
@@ -95,6 +96,7 @@ export const getAllPosts = async () =>{
             databaseId,
             videoCollectionId,
         )
+        // console.log(posts);
         return posts.documents;
     } catch (err) {
         console.log(err)
@@ -161,6 +163,75 @@ export const signOut = async () => {
         return session;    
     } catch (err) {
         console.log(err);
+        throw new Error((err as Error).message);
+    }
+}
+
+
+export const createVideoPost = async (form:any) =>{
+    try{
+      const [thumbnailUrl, videoUrl] = await Promise.all([
+        _uploadFile(form.thumbnail,"image"),
+        _uploadFile(form.video, "video")
+      ]); 
+      const newPost = await databases.createDocument(
+        databaseId,
+        videoCollectionId,
+        ID.unique(),
+        {
+            title: form.title,
+            thumbnail: thumbnailUrl,
+            video: videoUrl,
+            prompt: form.prompt,
+            creator: form.userId,
+        });
+        return newPost;
+    } catch (err) {
+        console.log(err);
+        throw new Error((err as Error).message);
+    }
+}
+
+
+const _uploadFile = async (file: any, type: string) =>{
+    if(!file) return;
+    const asset = {
+        name: file.fileName,
+        type: file.mimeType,
+        size: file.fileSize,
+        uri:  file.uri,
+    }
+
+    try{
+        const uploadFile = await storage.createFile(
+            storageId,
+            ID.unique(),
+            asset
+        );
+        
+        const fileUrl = await _getFilePreview(uploadFile.$id, type);
+        return fileUrl
+                
+    } catch (err) {
+        throw new Error((err as Error).message);
+    }
+} 
+
+const _getFilePreview = async (fileId: string , type: string) =>{
+    let fileUrl:globalThis.URL;
+
+    try{
+        if(type ==="video") {
+            fileUrl = storage.getFileView(storageId, type);
+        } else if (type === "image") {
+            fileUrl = storage.getFilePreview(storageId, fileId, 2000,2000,ImageGravity.Top,100);
+        } else {
+            throw new Error("Unknown file type !");
+        }
+        if(!fileUrl) throw new Error("Invalid file type !");
+        return fileUrl;
+
+    } catch (err){
         throw new Error((err as Error).message);
     }
 }

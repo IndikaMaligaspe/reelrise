@@ -26,7 +26,7 @@ const VideoCard = ({ video: {title, thumbnail, video,
                 </View>
                 <View className="justify-center flex-1 ml-3 gap-y-1">
                     <Text className="text-white font-psemibold text-sm">{title}</Text>
-                    <Text className="tex-xs text-gray-100 font-pregular" numberOfLines={1}>{username}</Text>
+                    <Text className="tex-xs text-gray-100 font-pregular" numberOfLines={1}>{!username?'':username}</Text>
                 </View>
             </View>
             <View className="pt-2">
