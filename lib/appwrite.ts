@@ -3,13 +3,14 @@ import { Client, Account, ID, Avatars, Databases, Query } from 'react-native-app
 export const appWriteConfig = {
     endpoint: 'https://cloud.appwrite.io/v1',
     platform: 'com.im-devlabs.reelrise',
-    projectId:'66f2133b0027211f7aad',
-    databaseId:'66f214e1002b33e563b8',
+    projectId:`${process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID}`,
+    databaseId:`${process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID}`,
     userCollectionId:'66f21544001e651b8bb1',
     videoCollectionId:'66f2158d001cae5da7f0',
     sorageId:'66f216de0035dba2c865',
 }
 
+console.log("---appWriteConfig--", appWriteConfig);
 
 const { endpoint, platform,projectId,databaseId,userCollectionId,videoCollectionId,sorageId } = appWriteConfig;
 
