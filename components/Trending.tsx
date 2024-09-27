@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image, ViewToken } from 'react-native'
+import { FlatList, TouchableOpacity, ImageBackground, Image, ViewToken } from 'react-native'
 import React, { useRef, useState } from 'react'
 import * as Animatable from 'react-native-animatable';
 import { Models } from 'react-native-appwrite';
@@ -33,11 +33,13 @@ const zoomOut:any = {
 const TrandingItem = ({activeItem, item}:TrandingItemProps) =>{
   const video = useRef(null);
   const [play, setPlay] = useState(false);  
+//   console.log(activeItem.$id, item.thumbnail)
   return(
     <Animatable.View 
      className="mr-5"
      animation={activeItem.$id === item.$id? zoomIn : zoomOut}
-     duration={500}>
+     duration={500}
+     key={item.$id}>
         {
             play ? (
                 <Video 
@@ -100,6 +102,7 @@ const Trending = ({posts}: TrendingProps) => {
         data = {posts}
         keyExtractor={(item) => item.id}
         horizontal
+        
         renderItem={({item}) =>(
             <TrandingItem 
                 activeItem={activeItem}

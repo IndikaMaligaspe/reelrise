@@ -4,6 +4,6 @@ export type GlobalContextType = {
     isLoggedIn:boolean,
     setIsLoggedIn:(loggedIn:boolean) => void,
     currentUser:Models.Document | null,
-    setCurrentUser:(user:Models.Document) => void,                
+    setCurrentUser:(user:Models.Document | null) => void,                
     isLoading: boolean
 }

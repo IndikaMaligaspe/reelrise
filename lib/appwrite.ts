@@ -56,9 +56,11 @@ export const createUser = async (email: string, password: string, userName:strin
 
 export const signIn = async (email:string, password: string) => {
     try{
-        let  session = await account.getSession('current')
-        if(!session)
-            session = await account.createEmailPasswordSession(email, password);
+        console.log('EMAIL- PW', email, password)
+        // let  session = await account.getSession('current')
+        // if(!session)
+        const session = await account.createEmailPasswordSession(email, password);
+        console.log('Session', session)
         if(!session) throw new Error()
         return session;    
     } catch (err) {
@@ -131,5 +133,33 @@ export const searchPosts = async (query:string | string[]) =>{
     } catch (err) {
         console.log(err)
         throw new Error((err as Error).message)
+    }
+}
+
+export const getUserPosts = async (userId:string) =>{
+    try{
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+                Query.equal('creator',userId),
+                Query.limit(7)
+            ]
+        )
+        return posts.documents;
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message)
+    }
+}
+
+export const signOut = async () => {
+    try{
+        let  session = await account.deleteSession('current')
+        return session;    
+    } catch (err) {
+        console.log(err);
+        throw new Error((err as Error).message);
     }
 }
