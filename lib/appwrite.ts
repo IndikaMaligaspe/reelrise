@@ -58,11 +58,7 @@ export const createUser = async (email: string, password: string, userName:strin
 
 export const signIn = async (email:string, password: string) => {
     try{
-        console.log('EMAIL- PW', email, password)
-        // let  session = await account.getSession('current')
-        // if(!session)
         const session = await account.createEmailPasswordSession(email, password);
-        console.log('Session', session)
         if(!session) throw new Error()
         return session;    
     } catch (err) {
@@ -157,6 +153,28 @@ export const getUserPosts = async (userId:string) =>{
     }
 }
 
+export const searchSavedVideos = async (query:string | string[] | undefined, userId: string) =>{
+    try{
+        
+        const posts = await databases.listDocuments(
+            databaseId,
+            videoCollectionId,
+            [
+                Query.orderDesc('$createdAt'),
+                Query.and(
+                    [Query.contains('title',!query?'':query),
+                    Query.equal('likedBy',userId)]
+                ),
+                Query.limit(7)
+            ]
+        )
+        return posts.documents;
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message)
+    }
+}
+
 export const signOut = async () => {
     try{
         let  session = await account.deleteSession('current')
@@ -167,6 +185,22 @@ export const signOut = async () => {
     }
 }
 
+export const updateBookmark = async (videoId:string, userId:string | undefined) =>{
+    try {
+        console.log('videoId- >',videoId, 'userId ->', userId)
+        const result = await databases.updateDocument(
+            databaseId, 
+            videoCollectionId,
+            videoId,
+            {
+                likedBy:userId
+            }
+        )
+    } catch (err) {
+        console.log(err)
+        throw new Error((err as Error).message); 
+    }
+}
 
 export const createVideoPost = async (form:any) =>{
     try{

@@ -33,14 +33,18 @@ const submit = async () => {
   }
     setIsSubmitting(true);
     try{
-      await signIn(
+      const loggin = await signIn(
         form.email, form.passWord
       )
+      if(!loggin){
+        Alert.alert('Login error', 'Invalid username or password. ')
+        return;
+      }
       const result = await getCurrentUser();
       setCurrentUser(result);
       setIsLoggedIn(true);
     } catch (err) {
-      Alert.alert('Error', (err as Error).message)
+      Alert.alert('Login Error', (err as Error).message)
     }
     finally {
       setIsSubmitting(false); 

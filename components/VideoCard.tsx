@@ -3,18 +3,49 @@ import React, { useState } from 'react'
 import { Models } from 'react-native-appwrite'
 import { ResizeMode, Video } from 'expo-av';
 import { icons } from '@/constants';
+import { updateBookmark } from '@/lib/appwrite';
+import { useGlobalContext } from '@/context/GlobalProvider';
+import { GlobalContextType } from '@/context/types.context';
+import MenuWrapper from './MenuWrapper';
 
 type VideoCardProps = {
     video: Models.Document;
 }
 
-const VideoCard = ({ video: {title, thumbnail, video, 
+const VideoCard = ({ video: {title, thumbnail, video, $id,
                      creator: {username, avatar}}}: VideoCardProps) => {
 
+  const {currentUser} = useGlobalContext() as GlobalContextType;                 
   const [isPlay, setIsPlay] = useState(false);
 
+  const bookmark = async () =>{
+    try{
+        await updateBookmark(
+          $id,
+          currentUser?.$id);
+          
+    }catch (err) {
+        console.log((err as Error).message)
+    }
+
+  }
+
+  const exitMenu = async () =>{
+
+  }
+
+  const items = [
+    {
+        title:"bookmark",
+        action:bookmark,
+    },
+    {
+        title:"close",
+        action:exitMenu
+    }
+  ]
   return (
-    <View className="flex-col items-center px-4 mb-14">
+    <View className="flex-col items-center px-4 mb-14 relative z-[-1]">
         <View className="flex-row gap-3 items-start">
             <View className="justify-center items-center flex-row flex-1 ml-3 ">
                 <View className="w-[46px] h-[46px] rounded-lg border border-secondary justify-center items-center p-0.5">
@@ -30,17 +61,14 @@ const VideoCard = ({ video: {title, thumbnail, video,
                 </View>
             </View>
             <View className="pt-2">
-                <Image 
-                    source={icons.menu} 
-                    className="w-5 h-5"
-                    resizeMode='contain'
-                />
+                <MenuWrapper 
+                 items={items}/>
             </View>
         </View>
         {
             isPlay ? (
                 <Video 
-                source={{ uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
+                source={{ uri: video }}
                 className="w-52 h-72 rounded-[35px] mt-3 "
                 resizeMode={ResizeMode.CONTAIN}
                 useNativeControls
@@ -54,7 +82,7 @@ const VideoCard = ({ video: {title, thumbnail, video,
             ) : (
                 <TouchableOpacity 
                     activeOpacity={0.7}
-                    className="w-full h-60 rounded-xl mt-3 relative justify-center items-center"
+                    className="w-full h-60 rounded-xl mt-3 relative justify-center items-center z-[-1]"
                     onPress={()=> setIsPlay(true)}
                 >
                     <Image 

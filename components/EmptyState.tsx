@@ -2,15 +2,16 @@ import { View, Image, Text } from 'react-native'
 import React from 'react'
 import { images } from '@/constants'
 import CustomButton from './CustomButton'
-import { router } from 'expo-router'
+import { router,Href } from 'expo-router'
 
 type EmptyStateProps = {
     title:string,
     subtitle:string,
     buttonTitle?:string
+    path:Href,
 }
 
-const EmptyState = ({title, subtitle, buttonTitle}: EmptyStateProps) => {
+const EmptyState = ({title, subtitle, buttonTitle, path}: EmptyStateProps) => {
   return (
     <View className="justify-center items-center px-4">
        <Image 
@@ -28,7 +29,7 @@ const EmptyState = ({title, subtitle, buttonTitle}: EmptyStateProps) => {
             buttonTitle &&
             <CustomButton
             title={buttonTitle}
-            handlePress={()=>(router.push('/create'))}
+            handlePress={()=>(router.push(path))}
             containerStyle="w-full my-5"
             />
         }

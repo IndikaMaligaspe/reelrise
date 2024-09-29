@@ -27,8 +27,9 @@ const Home = () => {
       <FlatList 
         data = {posts}
         keyExtractor={(item) => item.$id}
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <VideoCard 
+             key={index}
              video = {item}
           />
         )}
@@ -67,6 +68,7 @@ const Home = () => {
             title="Be the first to upload a video"
             subtitle="No Videos foubd"
             buttonTitle="Create Video"
+            path='/create'
           />
         )}
         refreshControl={
